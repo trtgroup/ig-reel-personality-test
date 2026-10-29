@@ -107,6 +107,22 @@
   .cta input { font: inherit; width: 100%; padding: 14px 16px; border-radius: 14px; border: none; background: var(--card); color: var(--ink); }
   .wa { display: block; text-align: center; background: var(--wa); color: #fff; font-weight: 700; font-size: 18px; padding: 16px; border-radius: 999px; text-decoration: none; }
   .fine { font-size: 13px; opacity: .7; }
+  .steps { display: flex; flex-direction: column; gap: 14px; }
+  .step { display: flex; gap: 12px; align-items: flex-start; }
+  .sn { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-family: var(--font-num); font-weight: 800; background: var(--c-energy); color: var(--on-chip); margin-top: 8px; }
+  .sb { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+  .cbtn, .igbtn { display: block; width: 100%; text-align: center; border: none; border-radius: 999px; padding: 15px; font-size: 17px; font-weight: 700; text-decoration: none; }
+  .cbtn { background: var(--card); color: var(--ink); }
+  .cbtn.ok { background: var(--c-schedule); color: var(--on-chip); }
+  .igbtn { background: var(--c-energy); color: var(--on-chip); }
+  .msgbox { font-size: 14px; background: rgba(127,127,127,.22); border-radius: 12px; padding: 10px 12px; user-select: all; }
+  .fallback { border-top: 1px solid rgba(127,127,127,.35); padding-top: 12px; }
+  .fallback summary { cursor: pointer; font-size: 14px; opacity: .85; list-style: none; }
+  .fallback summary::-webkit-details-marker { display: none; }
+  .fallback summary::after { content: " ▾"; }
+  .fallback[open] summary { margin-bottom: 10px; }
+  .plainlink { color: var(--c-energy); font-weight: 700; text-decoration: none; text-align: center; padding: 6px; }
+  .wabox { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid rgba(127,127,127,.35); }
   .handle { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .handle code { font-family: var(--font-num); font-size: 18px; font-weight: 700; background: rgba(127,127,127,.22); padding: 7px 12px; border-radius: 12px; user-select: all; }
   .handle button, .handle a { border: none; border-radius: 999px; padding: 9px 16px; font-size: 14px; font-weight: 700; text-decoration: none; }
@@ -135,7 +151,7 @@
       <div class="sticker s-schedule"><b>你怎样过一天</b><span>先排好 · 走着看</span></div>
     </div>
     <button id="start" class="go" type="button">开始测验 <span aria-hidden="true">→</span></button>
-    <p class="small">这是好玩的自我观察小测验，不是心理测评，也不是专业诊断。你的答案不会被收集；只有你自己按「把结果 WhatsApp 给我」发讯息，我才会收到你写的内容。</p>
+    <p class="small">这是好玩的自我观察小测验，不是心理测评，也不是专业诊断。你的答案不会被收集；只有你自己把结果发给我，我才会收到。</p>
   </section>
 
   <!-- Status -->
@@ -164,8 +180,8 @@
       <div class="choices">
         <button id="optA" class="choice" type="button"><span class="k">A</span><span id="optAtext"></span></button>
         <button id="optB" class="choice" type="button"><span class="k">B</span><span id="optBtext"></span></button>
+        <button id="optM" class="choice" type="button"><span class="k">C</span><span>两个都有一点</span></button>
       </div>
-      <button id="optM" class="both" type="button">两个都有一点</button>
     </div>
   </section>
 
@@ -181,19 +197,22 @@
     <p class="small">工作例子只是例子，不是答案。每一种人，在每一种工作里都有人做得很好；偏好会变，能力是可以学的。</p>
 
     <div class="cta">
-      <h2>想知道放进真实工作里，会是什么样子？</h2>
-      <p>把你的结果发给我，我回你一个适合你的工作方式。</p>
-      <div id="waBox" style="display:flex;flex-direction:column;gap:10px">
-        <label for="uname">你的名字（可以不填）</label>
-        <input id="uname" type="text" autocomplete="given-name" placeholder="例如：Mei Ling">
+      <h2>最后一步：把结果发给我</h2>
+      <p>我会亲自回你一个适合你的工作方式。</p>
+      <a id="sendRes" class="igbtn" href="https://ig.me/m/keanyung" target="_blank" rel="noopener">发送我的结果</a>
+      <p class="fine">会打开 Instagram 私讯。第一次私讯我？点「发送我的测验结果」就好。</p>
+      <details class="fallback">
+        <summary>打不开？复制结果，自己贴上</summary>
+        <div class="sb">
+          <button id="copyRes" class="cbtn" type="button">复制我的结果</button>
+          <p id="msg" class="msgbox">Hi Ky！我是「热情的蓝图派」，现在是工作 1–3 年。</p>
+          <a class="plainlink" href="https://ig.me/m/keanyung" target="_blank" rel="noopener">打开 Instagram 私讯 →</a>
+          <p class="fine">找不到的话，搜索 <b>@keanyung</b>。</p>
+        </div>
+      </details>
+      <div id="waBox" class="wabox">
+        <p class="fine">不用 Instagram？用 WhatsApp 也可以：</p>
         <a id="waLink" class="wa" href="#" target="_blank" rel="noopener">把结果 WhatsApp 给我</a>
-        <p class="fine">会打开 WhatsApp，讯息已经帮你写好，你看过再按发送。</p>
-      </div>
-      <p class="fine">或者截图这一页，DM 我：</p>
-      <div class="handle">
-        <code id="ig">@keanyung</code>
-        <button id="copy" type="button">复制</button>
-        <a href="https://www.instagram.com/keanyung/" target="_blank" rel="noopener">打开 Instagram</a>
       </div>
     </div>
     <button id="again" class="link-btn" type="button">重新做一次</button>
@@ -202,6 +221,11 @@
 </main>
 
 <script>
+  // ManyChat Instagram Ref URL; the result code is attached after "--" and saved to the test_result field.
+  const REF_BASE = "https://ig.me/m/keanyung?ref=test";
+  const ADJ_CODE  = { "果断的": "guoduan", "热情的": "reqing", "冷静的": "lengjing", "细腻的": "xini" };
+  const NOUN_CODE = { "落地派": "luodi", "行动派": "xingdong", "蓝图派": "lantu", "点子派": "dianzi" };
+  const STATUS_CODE = { "还在读书": "s1", "刚毕业（1 年内）": "s2", "工作 1–3 年": "s3", "工作 3 年以上": "s4" };
   // Ky's WhatsApp number in international format, digits only (e.g. "60123456789"). Empty hides the WhatsApp button.
   const WA_NUMBER = "";
 
@@ -258,6 +282,7 @@
     $("optBtext").textContent = q.b;
     $("optA").classList.toggle("picked", answers[i] === 1);
     $("optB").classList.toggle("picked", answers[i] === 0);
+    $("optM").classList.toggle("picked", answers[i] === 0.5);
     $("count").textContent = (i + 1) + " / " + QUESTIONS.length;
     [...$("bar").children].forEach((el, k) => el.classList.toggle("done", k < i));
     $("back").style.visibility = "visible";
@@ -286,11 +311,16 @@
     return out;
   }
 
+  function resultCode() {
+    const adj = resultName.slice(0, 3), noun = resultName.slice(3);
+    return [ADJ_CODE[adj] || "x", NOUN_CODE[noun] || "x", STATUS_CODE[status] || "s0"].join("_");
+  }
+  function resultMsg() { return "Hi Ky！我是「" + resultName + "」，现在是" + status + "。"; }
   function updateWa() {
+    $("msg").textContent = resultMsg();
+    $("sendRes").href = REF_BASE + "--" + resultCode();
     if (!WA_NUMBER) return;
-    const nm = $("uname").value.trim();
-    const msg = "Hi Ky！我做了你的工作风格测验 🙂\n我的结果：「" + resultName + "」\n我现在：" + status + "\n我叫：" + nm;
-    $("waLink").href = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(msg);
+    $("waLink").href = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(resultMsg() + "\n我叫：");
   }
 
   function renderResult() {
@@ -340,13 +370,13 @@
   }));
   $("optA").addEventListener("click", e => answer(1, e.currentTarget));
   $("optB").addEventListener("click", e => answer(0, e.currentTarget));
-  $("optM").addEventListener("click", () => answer(0.5));
+  $("optM").addEventListener("click", e => answer(0.5, e.currentTarget));
   $("back").addEventListener("click", () => { if (i > 0) { i--; renderQ(); } else show("status"); });
   $("again").addEventListener("click", () => show("intro"));
-  $("uname").addEventListener("input", updateWa);
-  $("copy").addEventListener("click", async () => {
-    try { await navigator.clipboard.writeText("@keanyung"); $("copy").textContent = "已复制"; }
-    catch (e) { const r = document.createRange(); r.selectNodeContents($("ig")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); $("copy").textContent = "已选好，长按复制"; }
+  $("copyRes").addEventListener("click", async () => {
+    const b = $("copyRes");
+    try { await navigator.clipboard.writeText(resultMsg()); b.textContent = "已复制 ✓ 下一步打开私讯"; b.classList.add("ok"); }
+    catch (e) { const r = document.createRange(); r.selectNodeContents($("msg")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent = "长按下面的字复制"; }
   });
 </script>
 

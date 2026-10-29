@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Ky 的工作风格测验</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Outfit:wght@500;700;800&display=swap">
+<style>
+  /* Layout: phone-first single column; each of the 4 dimensions owns one sticker colour that follows it from intro to result */
+  :root {
+    --bg: #F5F6FA;
+    --card: #FFFFFF;
+    --ink: #16161F;
+    --muted: #6B6E7E;
+    --line: #E6E8EF;
+    --soft: #EEF0F5;
+    --c-energy: #FFC24B;
+    --c-info: #7FD4F0;
+    --c-decide: #FF9EB1;
+    --c-schedule: #A6E59A;
+    --on-chip: #16161F;
+    --wa: #19A35B;
+    --font-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    --font-num: "Outfit", "Noto Sans SC", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: var(--font-body); font-size: 16px; line-height: 1.6;
+    padding-left: max(18px, env(safe-area-inset-left, 0px));
+    padding-right: max(18px, env(safe-area-inset-right, 0px));
+    padding-block: 22px 40px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 520px; margin: 0 auto; }
+  .screen { display: flex; flex-direction: column; gap: 20px; }
+  p { margin: 0; }
+  h1, h2 { margin: 0; font-weight: 900; letter-spacing: -0.01em; text-wrap: balance; line-height: 1.25; }
+  h1 { font-size: clamp(32px, 9vw, 44px); }
+  h2 { font-size: clamp(24px, 6.4vw, 30px); }
+  .muted { color: var(--muted); }
+  .small { font-size: 13px; color: var(--muted); line-height: 1.55; }
+  .tag { align-self: flex-start; font-size: 13px; font-weight: 700; padding: 5px 12px; border-radius: 999px; background: var(--card); color: var(--ink); border: 1px solid var(--line); }
+  .num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+
+  /* stickers */
+  .stickers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .sticker { border-radius: 20px; padding: 16px; color: var(--on-chip); min-height: 104px; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; }
+  .sticker b { font-size: 16px; line-height: 1.35; }
+  .sticker span { font-size: 13px; opacity: .78; }
+  .s-energy { background: var(--c-energy); } .s-info { background: var(--c-info); }
+  .s-decide { background: var(--c-decide); } .s-schedule { background: var(--c-schedule); }
+  .sticker:nth-child(1) { transform: rotate(-1.2deg); } .sticker:nth-child(4) { transform: rotate(1deg); }
+
+  /* buttons */
+  button { font: inherit; cursor: pointer; color: var(--ink); -webkit-tap-highlight-color: transparent; }
+  button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid var(--c-info); outline-offset: 3px; }
+  .go { width: 100%; border: none; border-radius: 999px; background: var(--ink); color: var(--bg); font-weight: 700; font-size: 18px; padding: 17px 20px; display: flex; justify-content: center; gap: 10px; transition: transform .12s; }
+  .go:active, .choice:active, .pill:active { transform: scale(.98); }
+  .link-btn { border: none; background: none; color: var(--muted); font-size: 15px; padding: 10px; }
+
+  /* status pills */
+  .pills { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .pill { border: 2px solid var(--line); background: var(--card); border-radius: 18px; padding: 18px 14px; font-weight: 700; font-size: 16px; text-align: center; transition: border-color .12s, transform .12s; }
+
+  /* quiz */
+  .bar { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; }
+  .bar i { height: 6px; border-radius: 3px; background: var(--line); transition: background .2s; }
+  .bar i.done { background: var(--ink); }
+  .qtop { display: flex; justify-content: space-between; align-items: center; }
+  .back { border: none; background: var(--card); border-radius: 999px; padding: 6px 14px; font-size: 14px; color: var(--muted); }
+  .chip { align-self: flex-start; font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 999px; color: var(--on-chip); }
+  .choices { display: flex; flex-direction: column; gap: 10px; }
+  .choice { text-align: left; border: 2px solid transparent; background: var(--card); border-radius: 20px; padding: 18px; font-size: 17px; font-weight: 500; line-height: 1.5; box-shadow: 0 1px 0 var(--line); transition: border-color .12s, transform .12s; display: flex; gap: 14px; align-items: flex-start; }
+  @media (hover: hover) { .choice:hover, .pill:hover { border-color: var(--ink); } .both:hover { border-color: var(--muted); } }
+  .choice .k { flex: none; font-family: var(--font-num); font-weight: 800; width: 30px; height: 30px; border-radius: 10px; display: grid; place-items: center; background: var(--soft); font-size: 15px; }
+  .choice.picked { border-color: var(--ink); }
+  .both { align-self: center; border: 2px dashed var(--line); background: transparent; border-radius: 999px; padding: 10px 20px; font-size: 15px; color: var(--muted); font-weight: 500; }
+
+  /* result */
+  .hero { border-radius: 26px; padding: 24px 22px; background: var(--card); display: flex; flex-direction: column; gap: 10px; position: relative; overflow: hidden; }
+  .hero::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 8px; background: linear-gradient(90deg, var(--c-energy) 0 25%, var(--c-info) 25% 50%, var(--c-decide) 50% 75%, var(--c-schedule) 75%); }
+  .hero .you { font-size: 15px; color: var(--muted); font-weight: 500; margin-top: 6px; }
+  .rname { font-size: clamp(36px, 11vw, 52px); font-weight: 900; line-height: 1.15; letter-spacing: -0.02em; }
+  .dcard { background: var(--card); border-radius: 22px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+  .dhead { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .dhead .q { font-size: 14px; color: var(--muted); font-weight: 500; }
+  .lean { font-size: 22px; font-weight: 900; }
+  .meter { position: relative; height: 12px; border-radius: 6px; background: var(--soft); }
+  .meter .fillbar { position: absolute; top: 0; bottom: 0; border-radius: 6px; }
+  .meter .mid { position: absolute; left: 50%; top: -3px; bottom: -3px; width: 2px; background: var(--line); }
+  .ends { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); }
+  .ends b { color: var(--ink); }
+  .rows { display: flex; flex-direction: column; gap: 10px; }
+  .row { display: flex; flex-direction: column; gap: 2px; padding-top: 10px; border-top: 1px solid var(--line); }
+  .row .k { font-size: 12.5px; color: var(--muted); font-weight: 700; letter-spacing: .04em; }
+  .row .v { font-size: 15.5px; }
+  .middle-note { font-size: 14.5px; background: var(--soft); border-radius: 12px; padding: 10px 12px; }
+
+  .cta { background: var(--ink); color: var(--bg); border-radius: 26px; padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+  .cta h2 { color: var(--bg); font-size: 24px; }
+  .cta label { font-size: 14px; opacity: .85; }
+  .cta input { font: inherit; width: 100%; padding: 14px 16px; border-radius: 14px; border: none; background: var(--card); color: var(--ink); }
+  .wa { display: block; text-align: center; background: var(--wa); color: #fff; font-weight: 700; font-size: 18px; padding: 16px; border-radius: 999px; text-decoration: none; }
+  .fine { font-size: 13px; opacity: .7; }
+  .handle { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .handle code { font-family: var(--font-num); font-size: 18px; font-weight: 700; background: rgba(127,127,127,.22); padding: 7px 12px; border-radius: 12px; user-select: all; }
+  .handle button, .handle a { border: none; border-radius: 999px; padding: 9px 16px; font-size: 14px; font-weight: 700; text-decoration: none; }
+  .handle button { background: var(--card); color: var(--ink); }
+  .handle a { background: var(--c-energy); color: var(--on-chip); }
+
+  .enter { animation: enter .28s ease-out; }
+  @keyframes enter { from { opacity: .3; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .enter { animation: none; } .go, .choice, .pill, .bar i { transition: none; } }
+  @media (max-width: 360px) { .stickers, .pills { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<main class="wrap">
+
+  <!-- Intro -->
+  <section id="intro" class="screen enter">
+    <span class="tag"><span class="num">2</span> 分钟 · <span class="num">10</span> 题 · 没有对错</span>
+    <h1>你比较舒服的工作方式，是哪一种？</h1>
+    <p class="muted">选你「平常比较像」的那个。两边都有一点，就选中间。</p>
+    <div class="stickers">
+      <div class="sticker s-energy"><b>你的电从哪里来</b><span>爱热闹 · 爱安静</span></div>
+      <div class="sticker s-info"><b>你先看到什么</b><span>看眼前 · 看以后</span></div>
+      <div class="sticker s-decide"><b>你怎样做决定</b><span>先想道理 · 先想人</span></div>
+      <div class="sticker s-schedule"><b>你怎样过一天</b><span>先排好 · 走着看</span></div>
+    </div>
+    <button id="start" class="go" type="button">开始测验 <span aria-hidden="true">→</span></button>
+    <p class="small">这是好玩的自我观察小测验，不是心理测评，也不是专业诊断。你的答案不会被收集；只有你自己按「把结果 WhatsApp 给我」发讯息，我才会收到你写的内容。</p>
+  </section>
+
+  <!-- Status -->
+  <section id="status" class="screen" hidden>
+    <div class="bar" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <span class="tag">开始之前</span>
+    <h2>你现在是？</h2>
+    <div class="pills">
+      <button class="pill st" type="button" data-v="还在读书">还在读书</button>
+      <button class="pill st" type="button" data-v="刚毕业（1 年内）">刚毕业<br><span class="small">1 年内</span></button>
+      <button class="pill st" type="button" data-v="工作 1–3 年">工作 <span class="num">1–3</span> 年</button>
+      <button class="pill st" type="button" data-v="工作 3 年以上">工作 <span class="num">3</span> 年以上</button>
+    </div>
+  </section>
+
+  <!-- Question -->
+  <section id="quiz" class="screen" hidden>
+    <div id="bar" class="bar" aria-hidden="true"></div>
+    <div class="qtop">
+      <button id="back" class="back" type="button">← 上一题</button>
+      <span id="count" class="small num">1 / 10</span>
+    </div>
+    <div id="qcard" class="screen" style="gap:16px">
+      <span id="qdim" class="chip s-energy">你的电从哪里来</span>
+      <h2 id="qtext">问题</h2>
+      <div class="choices">
+        <button id="optA" class="choice" type="button"><span class="k">A</span><span id="optAtext"></span></button>
+        <button id="optB" class="choice" type="button"><span class="k">B</span><span id="optBtext"></span></button>
+      </div>
+      <button id="optM" class="both" type="button">两个都有一点</button>
+    </div>
+  </section>
+
+  <!-- Result -->
+  <section id="result" class="screen" hidden>
+    <div class="hero">
+      <span class="you">你是</span>
+      <div id="rname" class="rname">热情的蓝图派</div>
+      <span id="rstatus" class="tag" style="margin-top:4px">工作 1–3 年</span>
+      <p class="muted" style="font-size:15px">这不是框住你的标签，是你现在比较舒服的工作方式。</p>
+    </div>
+    <div id="cards" class="screen" style="gap:12px"></div>
+    <p class="small">工作例子只是例子，不是答案。每一种人，在每一种工作里都有人做得很好；偏好会变，能力是可以学的。</p>
+
+    <div class="cta">
+      <h2>想知道放进真实工作里，会是什么样子？</h2>
+      <p>把你的结果发给我，我回你一个适合你的工作方式。</p>
+      <div id="waBox" style="display:flex;flex-direction:column;gap:10px">
+        <label for="uname">你的名字（可以不填）</label>
+        <input id="uname" type="text" autocomplete="given-name" placeholder="例如：Mei Ling">
+        <a id="waLink" class="wa" href="#" target="_blank" rel="noopener">把结果 WhatsApp 给我</a>
+        <p class="fine">会打开 WhatsApp，讯息已经帮你写好，你看过再按发送。</p>
+      </div>
+      <p class="fine">或者截图这一页，DM 我：</p>
+      <div class="handle">
+        <code id="ig">@keanyung</code>
+        <button id="copy" type="button">复制</button>
+        <a href="https://www.instagram.com/keanyung/" target="_blank" rel="noopener">打开 Instagram</a>
+      </div>
+    </div>
+    <button id="again" class="link-btn" type="button">重新做一次</button>
+  </section>
+
+</main>
+
+<script>
+  // Ky's WhatsApp number in international format, digits only (e.g. "60123456789"). Empty hides the WhatsApp button.
+  const WA_NUMBER = "";
+
+  const DIMS = {
+    energy:   { name: "你的电从哪里来", a: "爱热闹",   b: "爱安静", color: "var(--c-energy)",   cls: "s-energy" },
+    info:     { name: "你先看到什么",   a: "看眼前",   b: "看以后", color: "var(--c-info)",     cls: "s-info" },
+    decide:   { name: "你怎样做决定",   a: "先想道理", b: "先想人", color: "var(--c-decide)",   cls: "s-decide" },
+    schedule: { name: "你怎样过一天",   a: "先排好",   b: "走着看", color: "var(--c-schedule)", cls: "s-schedule" }
+  };
+  const QUESTIONS = [
+    { d: "energy",   q: "忙了一整个星期，周末你最想：", a: "约朋友出去 cafe hopping、吃东西", b: "在家充电，谁都不要找我" },
+    { d: "energy",   q: "新公司第一天，你通常：", a: "主动跟同事聊天，先认识人", b: "先观察，熟了才慢慢讲" },
+    { d: "energy",   q: "开会时想到一个点子：", a: "马上讲出来，边讲边想", b: "先想清楚，会后再 WhatsApp 讲" },
+    { d: "info",     q: "学一样新东西，你比较喜欢：", a: "一步一步教我怎么做", b: "先讲为什么，大方向懂了我自己摸" },
+    { d: "info",     q: "想到「5 年后的自己」，你先想到的是：", a: "具体的：薪水多少、住哪里、开什么车", b: "感觉的：想成为怎样的人、做什么有意义的事" },
+    { d: "decide",   q: "朋友问你要不要换工：", a: "帮他列好处坏处，算清楚再说", b: "先问他：你现在开心吗？" },
+    { d: "decide",   q: "同事做错事，你会：", a: "直接讲哪里错、怎样改，比较快", b: "先顾他的感受，再慢慢讲" },
+    { d: "schedule", q: "去旅行，你是：", a: "行程表排得好好的", b: "买了机票，其他到了再算" },
+    { d: "schedule", q: "deadline 是星期五：", a: "星期二就做完，比较安心", b: "星期四晚上，灵感最多" },
+    { d: "schedule", q: "你理想中的一天：", a: "固定，每天差不多，心里有底", b: "每天不一样，自己安排" }
+  ];
+  const DETAIL = {
+    爱热闹:   { comfy: "跟人一起做事，边讲边想", tired: "整天一个人对着电脑", eg: "活动策划、培训讲师、公关、零售管理、hospitality", ask: "这份工，我每天会见到多少人？" },
+    爱安静:   { comfy: "一对一、深度的谈话，先想清楚再讲", tired: "整天开会、应酬", eg: "研究／实验室、programmer、会计、写作编辑、数据分析", ask: "这份工，有没有让我安静做事的时间？" },
+    看眼前:   { comfy: "具体、看得到的成果，讲求准确", tired: "一直变、没有标准", eg: "会计、药剂、护理、物流运营、行政", ask: "我做的东西，看得到成果吗？" },
+    看以后:   { comfy: "新想法、看大方向、想长远", tired: "每天重复一样的事", eg: "策略／市场营销、产品设计、研究、创业", ask: "这份工，有没有让我想新东西的空间？" },
+    先想道理: { comfy: "讲道理、分析、解决问题", tired: "只讲感受、没有逻辑的决定", eg: "工程、IT、财务分析、法律、审计", ask: "我想被肯定的，是不是「做得对」？" },
+    先想人:   { comfy: "照顾人、让人安心、做有意义的事", tired: "冷冰冰、只看数字的环境", eg: "HR、教育、医护、社工、客户关系", ask: "我做的事，有没有帮到人？" },
+    先排好:   { comfy: "有计划、有结构、有 deadline", tired: "一直临时改", eg: "项目管理、合规、银行、行政", ask: "这份工的节奏，我能不能预先知道？" },
+    走着看:   { comfy: "弹性、随机应变、每天不一样", tired: "每分钟都被排好", eg: "活动／媒体、自由职业、创意、现场工作", ask: "我的时间，是别人排，还是我自己排？" }
+  };
+  const ADJ  = { "爱热闹先想道理": "果断的", "爱热闹先想人": "热情的", "爱安静先想道理": "冷静的", "爱安静先想人": "细腻的" };
+  const NOUN = { "看眼前先排好": "落地派", "看眼前走着看": "行动派", "看以后先排好": "蓝图派", "看以后走着看": "点子派" };
+
+  const $ = id => document.getElementById(id);
+  let answers = [], i = 0, status = "", resultName = "", busy = false;
+
+  $("bar").innerHTML = "<i></i>".repeat(QUESTIONS.length);
+
+  function animate(el) { el.classList.remove("enter"); void el.offsetWidth; el.classList.add("enter"); }
+  function show(id) {
+    for (const s of ["intro", "status", "quiz", "result"]) $(s).hidden = s !== id;
+    animate($(id));
+    window.scrollTo(0, 0);
+  }
+
+  function renderQ() {
+    const q = QUESTIONS[i], dim = DIMS[q.d];
+    const chip = $("qdim");
+    chip.textContent = dim.name;
+    chip.className = "chip " + dim.cls;
+    $("qtext").textContent = q.q;
+    $("optAtext").textContent = q.a;
+    $("optBtext").textContent = q.b;
+    $("optA").classList.toggle("picked", answers[i] === 1);
+    $("optB").classList.toggle("picked", answers[i] === 0);
+    $("count").textContent = (i + 1) + " / " + QUESTIONS.length;
+    [...$("bar").children].forEach((el, k) => el.classList.toggle("done", k < i));
+    $("back").style.visibility = "visible";
+    animate($("qcard"));
+  }
+
+  function answer(v, btn) {
+    if (busy) return;
+    busy = true;
+    answers[i] = v;
+    if (btn) btn.classList.add("picked");
+    setTimeout(() => {
+      busy = false;
+      if (btn) btn.classList.remove("picked");
+      if (i < QUESTIONS.length - 1) { i++; renderQ(); }
+      else { renderResult(); show("result"); }
+    }, 160);
+  }
+
+  function scores() {
+    const out = {};
+    for (const d of Object.keys(DIMS)) {
+      const vals = QUESTIONS.map((q, k) => q.d === d ? answers[k] : null).filter(x => x !== null);
+      out[d] = Math.round(vals.reduce((s, x) => s + x, 0) / vals.length * 100);
+    }
+    return out;
+  }
+
+  function updateWa() {
+    if (!WA_NUMBER) return;
+    const nm = $("uname").value.trim();
+    const msg = "Hi Ky！我做了你的工作风格测验 🙂\n我的结果：「" + resultName + "」\n我现在：" + status + "\n我叫：" + nm;
+    $("waLink").href = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(msg);
+  }
+
+  function renderResult() {
+    const s = scores();
+    const lean = d => s[d] >= 50 ? DIMS[d].a : DIMS[d].b;
+    resultName = (ADJ[lean("energy") + lean("decide")] || "") + (NOUN[lean("info") + lean("schedule")] || "");
+    $("rname").textContent = resultName;
+    $("rstatus").textContent = status;
+    const cards = $("cards");
+    cards.innerHTML = "";
+    for (const d of Object.keys(DIMS)) {
+      const dim = DIMS[d], pct = s[d], pole = lean(d), det = DETAIL[pole];
+      const middle = pct > 40 && pct < 60;
+      const towardA = pct >= 50;
+      const strength = Math.abs(pct - 50); // 0–50
+      const fill = towardA
+        ? `right:50%;width:${strength}%;`
+        : `left:50%;width:${strength}%;`;
+      const card = document.createElement("div");
+      card.className = "dcard";
+      card.innerHTML = `
+        <div class="dhead">
+          <span class="chip ${dim.cls}">${dim.name}</span>
+          <span class="lean">${middle ? "在中间" : pole}</span>
+        </div>
+        <div class="meter" role="img" aria-label="${dim.a} ${pct}%，${dim.b} ${100 - pct}%">
+          <span class="fillbar" style="${fill}background:${dim.color}"></span>
+          <span class="mid"></span>
+        </div>
+        <div class="ends"><span><b>${dim.a}</b> <span class="num">${pct}%</span></span><span><span class="num">${100 - pct}%</span> <b>${dim.b}</b></span></div>
+        ${middle ? `<p class="middle-note">两边你都用得上，看场合换，是一种能力。偏一点点的是「${pole}」：</p>` : ""}
+        <div class="rows">
+          <div class="row"><span class="k">让你有能量的</span><span class="v">${det.comfy}</span></div>
+          <div class="row"><span class="k">会消耗你的</span><span class="v">${det.tired}</span></div>
+          <div class="row"><span class="k">工作例子</span><span class="v">${det.eg}</span></div>
+          <div class="row"><span class="k">找工作时问自己</span><span class="v">${det.ask}</span></div>
+        </div>`;
+      cards.appendChild(card);
+    }
+    $("waBox").hidden = !WA_NUMBER;
+    updateWa();
+  }
+
+  $("start").addEventListener("click", () => show("status"));
+  document.querySelectorAll(".st").forEach(b => b.addEventListener("click", () => {
+    status = b.dataset.v; answers = []; i = 0; show("quiz"); renderQ();
+  }));
+  $("optA").addEventListener("click", e => answer(1, e.currentTarget));
+  $("optB").addEventListener("click", e => answer(0, e.currentTarget));
+  $("optM").addEventListener("click", () => answer(0.5));
+  $("back").addEventListener("click", () => { if (i > 0) { i--; renderQ(); } else show("status"); });
+  $("again").addEventListener("click", () => show("intro"));
+  $("uname").addEventListener("input", updateWa);
+  $("copy").addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText("@keanyung"); $("copy").textContent = "已复制"; }
+    catch (e) { const r = document.createRange(); r.selectNodeContents($("ig")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); $("copy").textContent = "已选好，长按复制"; }
+  });
+</script>
+
+</body>
+</html>
